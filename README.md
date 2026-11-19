@@ -40,3 +40,18 @@ Les commandes mutantes sont interdites en Play et dans les sessions lecture seul
 - **Non déployé/non validé** tant que la CI et les trois PR n'ont pas été intégrées. Avoir le site Pages existant ne signifie pas que l'endpoint MCP est opérationnel.
 - Le protocole MCP JSON-RPC est minimal ; avant un lancement public, compléter les protections anti-abus, TTL/pruning D1 et tests d'intégration ainsi que les contrôles de rôles via WarLike Keys/Server.
 - Ne pas configurer de tokens permanents dans un navigateur partagé. Le lien entre une session MCP et la session utilisateur WarLike n'est pas encore intégré dans le contrôle des comptes natifs ; le relais utilise des secrets d'application dédiés.
+
+## Renforcement du relais — PR de durcissement
+
+Le proxy `functions/mcp.js` est désormais limité à un **message JSON-RPC 2.0 par POST** (pas de batch), en JSON, et à **16 Kio d'entrée maximum**, vérifiés pendant la lecture du flux. Il impose une autorisation Bearer de forme attendue, mais **la validation cryptographique du secret et la gestion des droits restent exclusivement dans WarLike Server**.
+
+- Aucun Cookie ou en-tête client non autorisé n'est transféré à Server.
+- Délai d'attente de 15 secondes et réponses 502 contrôlées en cas d'indisponibilité ou de réponse non JSON.
+- Réponses non mises en cache ; les notifications sans corps (204) sont prises en charge.
+- Les requêtes OPTIONS ne permettent pas un accès CORS générique.
+- GET /mcp reste informatif : il n'est pas un contrôle de santé en direct.
+- Tests de transport et de comportement ajoutés sous `tests/mcp-proxy.test.mjs`.
+
+**Compatibilité :** ce relais accepte JSON-RPC sur POST avec réponse JSON et ne fournit pas encore de session HTTP MCP complète ni de transport SSE. Certains clients MCP récents peuvent attendre d'autres fonctionnalités du protocole ; les implémenter nécessitera de coordonner le client et WarLike Server. Les commandes Engine restent soumises à son consentement, à ses validations et à son contrôle d'accès.
+
+**Hors portée :** les cinq fournisseurs du Control Center ne sont pas branchés automatiquement par cette modification. Les adaptateurs OpenAI, Anthropic, Cloudflare, Meshy et GitHub doivent passer par des endpoints autorisés de WarLike Server. Ne jamais transformer le proxy MCP en proxy HTTP ouvert.
