@@ -28,10 +28,15 @@ GameObjects et Components du projet actuellement ouvert
 
 ## Tools
 
-- `warlike_list_objects` : lecture seule, maximum 100 objets.
+- `warlike_list_sessions` : liste les onglets Engine connectés, leur autorisation et un identifiant de session explicite. Aucune sélection implicite du dernier onglet.
+- `warlike_list_objects` : lecture seule, maximum 100 objets, avec `sessionId`.
 - `warlike_select_object`, `warlike_set_transform` : sélection et édition Transform.
 - `warlike_add_component`, `warlike_get_component`, `warlike_set_component_property` : composants déjà enregistrés uniquement, jamais des Prefabs.
-- `warlike_command_result` : interroge le statut d'une commande asynchrone transmise au navigateur.
+- `warlike_command_result` : interroge une commande asynchrone avec **`commandId` et `sessionId`**, empêchant une lecture de résultat depuis un autre onglet.
+
+## Vérification avant utilisation
+
+Ouvrir `https://warlike-mcp.pages.dev/` et utiliser « Vérifier les outils ». Le navigateur conserve la clé uniquement en mémoire ; le diagnostic appelle `tools/list` sans effectuer de modification. Dans Engine, le bouton MCP affiche un ID de session copiable ; utiliser cet ID dans les outils. Déconnecter après chaque intervention. Trois erreurs réseau consécutives interrompent le pont de l’éditeur.
 
 Les commandes mutantes sont interdites en Play et dans les sessions lecture seule ; les paramètres sont validés des deux côtés. Aucun accès au shell, disque local, DOM arbitraire, navigation vers d'autres sites ou évaluation de scripts.
 
