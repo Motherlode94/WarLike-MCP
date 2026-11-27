@@ -60,3 +60,6 @@ Le proxy `functions/mcp.js` est désormais limité à un **message JSON-RPC 2.0 
 **Compatibilité :** ce relais accepte JSON-RPC sur POST avec réponse JSON et ne fournit pas encore de session HTTP MCP complète ni de transport SSE. Certains clients MCP récents peuvent attendre d'autres fonctionnalités du protocole ; les implémenter nécessitera de coordonner le client et WarLike Server. Les commandes Engine restent soumises à son consentement, à ses validations et à son contrôle d'accès.
 
 **Hors portée :** les cinq fournisseurs du Control Center ne sont pas branchés automatiquement par cette modification. Les adaptateurs OpenAI, Anthropic, Cloudflare, Meshy et GitHub doivent passer par des endpoints autorisés de WarLike Server. Ne jamais transformer le proxy MCP en proxy HTTP ouvert.
+
+## Local Bridge (séparé du relais cloud)
+Voir [guide d’installation local](docs/local-bridge.md). L’agent stdio requiert un client MCP local. Aucun outil de lecture du disque n’est ajouté à l’endpoint public `/mcp`.
