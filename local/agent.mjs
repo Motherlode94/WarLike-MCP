@@ -1,2 +1,3 @@
-import {createRouter,serve} from './protocol.mjs';
-await serve(process.stdin,process.stdout,createRouter());
+import {createRouter,serve} from './protocol.mjs';import {openScope} from './scope.mjs';
+const args=process.argv.slice(2);if(args.length!==2||args[0]!=='--root'){console.error('Usage: start-local.cmd --root "absolute asset directory"');process.exit(2)}
+const scope=await openScope(args[1]);const tools=[{name:'warlike_local_scope',description:'Return scope availability without exposing absolute paths',inputSchema:{type:'object',properties:{},additionalProperties:false},run:async()=>({authorized:!!scope,mode:'read-only'})}];await serve(process.stdin,process.stdout,createRouter(tools));
