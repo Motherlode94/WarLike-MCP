@@ -1,0 +1,9 @@
+/* MCP-specific surfaces follow the canonical WarLike theme. */
+html[data-warlike-app="warlike-mcp"] main article{background:var(--wl-surface);color:var(--wl-text);border-color:var(--wl-border);box-shadow:var(--wl-shadow)}
+html[data-warlike-app="warlike-mcp"] main a{color:var(--wl-focus);text-decoration:underline;text-underline-offset:2px}
+html[data-warlike-app="warlike-mcp"] main :is(code,pre){background:var(--wl-surface-alt);color:var(--wl-text);border:1px solid var(--wl-border)}
+html[data-warlike-app="warlike-mcp"] main .mcp-test input{background:var(--wl-input);color:var(--wl-text);border-color:var(--wl-sage)}
+html[data-warlike-app="warlike-mcp"] main .mcp-test button{background:var(--wl-focus);color:var(--wl-white);border-color:var(--wl-focus)}
+html[data-warlike-app="warlike-mcp"] main .mcp-test button:disabled{opacity:.65;cursor:wait}
+html[data-warlike-app="warlike-mcp"] main :is(a,input,button):focus-visible{outline:3px solid var(--wl-focus);outline-offset:3px}
+@media(max-width:600px){html[data-warlike-app="warlike-mcp"] main{margin:0 auto;padding:16px}html[data-warlike-app="warlike-mcp"] main header{flex-wrap:wrap}html[data-warlike-app="warlike-mcp"] main article{padding:16px;overflow-wrap:anywhere}}
