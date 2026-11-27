@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';import path from 'node:path';import {createHash} from 'node:crypto';import {resolveScoped} from './scope.mjs';
+export const PACK_EXT=new Set(['png','jpg','jpeg','webp','gif','glb','wav','ogg','mp3','flac']);
+export const MAX_PACK_BYTES=20*1024*1024;
+export async function buildLocalPack(scope,paths,{author,license,collection='Local Assets'}={}){
+ if(!Array.isArray(paths)||paths.length<1||paths.length>100||new Set(paths).size!==paths.length)throw Error('Select 1–100 distinct relative paths');
+ for(const [k,v] of Object.entries({author,license,collection}))if(typeof v!=='string'||!v.trim()||v.length>100)throw Error('Specify '+k+' (use Unknown when unverified)');
+ const assets=[];let total=0;
+ for(const relative of paths){const ext=path.extname(relative).slice(1).toLowerCase();if(!PACK_EXT.has(ext))throw Error('Unsupported pack format');const resolved=await resolveScoped(scope,relative);if(resolved.stat.size<1||total+resolved.stat.size>MAX_PACK_BYTES)throw Error('Pack byte limit exceeded');const handle=await fs.open(resolved.path,'r');try{const st=await handle.stat();if(!st.isFile()||st.size!==resolved.stat.size||st.ino!==resolved.stat.ino||st.dev!==resolved.stat.dev||st.nlink>1)throw Error('File changed or linked');const bytes=Buffer.alloc(st.size);let pos=0;while(pos<bytes.length){const {bytesRead}=await handle.read(bytes,pos,bytes.length-pos,pos);if(!bytesRead)throw Error('File changed during read');pos+=bytesRead;}const after=await handle.stat(),again=await resolveScoped(scope,relative);if(after.size!==st.size||after.mtimeMs!==st.mtimeMs||again.stat.ino!==st.ino||again.stat.dev!==st.dev)throw Error('File changed during read');total+=bytes.length;assets.push({path:relative,filename:relative.split('/').at(-1),author:author.trim(),license:license.trim(),collection:collection.trim(),byteLength:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),encoding:'base64',data:bytes.toString('base64')});}finally{await handle.close();}}
+ return {schema:'warlike.local.assets.v1',version:1,assets};
+}
